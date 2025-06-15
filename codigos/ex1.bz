@@ -1,0 +1,6 @@
+((\b : bool -> 
+    if b then 
+      (2 + 3 )
+    else
+      (5 + 7)
+    ) false)
