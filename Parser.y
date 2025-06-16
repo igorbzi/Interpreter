@@ -31,13 +31,16 @@ import Lexer
     "->"          { TokenArrow }
     '('           { TokenLParen }
     ')'           { TokenRParen }
+    '='           { TokenAtt }
     int           { TokenTNum }
     bool          { TokenTBool }
+    let           { TokenLet }
+    in            { TokenIn }
 
 
-%nonassoc if then else int bool var num true false
+%nonassoc if then else int bool var num true false let in
 %nonassoc '\\' "->" '(' ')' ':'
-%left '>' "<="
+%left '>' "<=" 
 %left '+' '-'
 %left '*' '/'
 %left "&&" "||"
@@ -61,6 +64,7 @@ Exp : num                           { Num $1 }
     | '\\' var ':' Type "->" Exp    { Lam $2 $4 $6 }
     | Exp Exp                       { App $1 $2}
     | '(' Exp ')'                   { Paren $2 }
+    | let var '=' Exp in Exp        { Let $2 $4 $6 }
 
 Type  : int                           { TNum }
       | bool                          { TBool }

@@ -53,7 +53,11 @@ typeof ctx (App e1 e2) =
                                 | otherwise -> Nothing
                         _ -> Nothing
     _ -> Nothing
-typeof ctx (Paren e) = typeof ctx e                         
+typeof ctx (Paren e) = typeof ctx e    
+typeof ctx (Let x e1 e2) =       
+  case typeof ctx e1 of
+    Just t1 -> typeof ((x, t1) : ctx) e2
+    _ -> Nothing                     
 
 
 typecheck :: Expr -> Expr

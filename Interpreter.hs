@@ -30,6 +30,7 @@ subst v e (Var x)     = if v == x then e else Var x
 subst v e (Lam x t l) = Lam x t (subst v e l)
 subst v e (App e1 e2) = App (subst v e e1) (subst v e e2)
 subst v e (Paren e1)  = Paren (subst v e e1)
+subst v e (Let x e1 e2) = Let x (subst v e e1) (subst v e e2)
 
 
 step :: Expr -> Expr
@@ -67,3 +68,4 @@ step (App e1@(Lam x t b) e2)  |  isValue e2 = subst x e2 b
                               |  otherwise  = App e1 (step e2)
 step (App e1 e2)              = App (step e1) e2
 step (Paren e)                = e
+step (Let x e1 e2)            = subst x e1 e2
