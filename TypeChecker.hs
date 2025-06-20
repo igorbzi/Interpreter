@@ -54,11 +54,23 @@ typeof ctx (App e1 e2) =
                         _ -> Nothing
     _ -> Nothing
 typeof ctx (Paren e) = typeof ctx e    
+
 typeof ctx (Let x e1 e2) =       
   case typeof ctx e1 of
     Just t1 -> typeof ((x, t1) : ctx) e2
     _ -> Nothing                     
 
+typeof ctx (Tuple es) = do          
+  ts <- mapM (typeof ctx) es
+  return (TTuple ts)
+
+typeof ctx (Proj e i) =
+  case typeof ctx e of
+    Just (TTuple ts) -> 
+      if i > 0 && i <= length ts 
+        then Just (ts !! (i-1))
+        else Nothing
+    _ -> Nothing
 
 typecheck :: Expr -> Expr
 typecheck e = case typeof [] e of

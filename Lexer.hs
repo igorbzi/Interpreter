@@ -14,17 +14,21 @@ data Expr = BTrue
           | If Expr Expr Expr
           | GrT Expr Expr
           | LEq Expr Expr
+          | Eq Expr Expr
           | Not Expr
           | Var String
           | Lam String Ty Expr
           | App Expr Expr
           | Paren Expr
           | Let String Expr Expr
+          | Tuple [Expr]
+          | Proj Expr Int
         deriving Show 
 
 data Ty = TBool
         | TNum
         | TFun Ty Ty
+        | TTuple [Ty]
         deriving (Show, Eq)
 
 data Token = TokenTrue
@@ -42,6 +46,7 @@ data Token = TokenTrue
            | TokenNot
            | TokenGrT
            | TokenLEq
+           | TokenEq
            | TokenVar String
            | TokenLam
            | TokenArrow
@@ -53,25 +58,34 @@ data Token = TokenTrue
            | TokenLet
            | TokenIn
            | TokenAtt
+           | TokenLBrace   
+           | TokenRBrace       
+           | TokenComma            
+           | TokenDot
            deriving Show
 
 
 lexer :: String -> [Token]
 lexer [] = []
-lexer ('+' : cs)        = TokenAdd : lexer cs
-lexer ('-':'>':cs)      = TokenArrow : lexer cs
-lexer ('-' : cs)        = TokenSub : lexer cs
-lexer ('*' : cs)        = TokenMul : lexer cs
-lexer ('/' : cs)        = TokenDiv : lexer cs 
-lexer ('\\': cs)        = TokenLam : lexer cs
-lexer (':' : cs)        = TokenColon : lexer cs
+lexer ('+' : cs)        = TokenAdd    : lexer cs
+lexer ('-':'>':cs)      = TokenArrow  : lexer cs
+lexer ('-' : cs)        = TokenSub    : lexer cs
+lexer ('*' : cs)        = TokenMul    : lexer cs
+lexer ('/' : cs)        = TokenDiv    : lexer cs 
+lexer ('\\': cs)        = TokenLam    : lexer cs
+lexer (':' : cs)        = TokenColon  : lexer cs
 lexer ('(' : cs)        = TokenLParen : lexer cs 
 lexer (')' : cs)        = TokenRParen : lexer cs 
-lexer ('&' : '&' : cs)  = TokenAnd : lexer cs
-lexer ('|' : '|' : cs)  = TokenOr : lexer cs
-lexer ('>' : cs)        = TokenGrT : lexer cs
-lexer ('<' : '=' : cs)  = TokenLEq : lexer cs
-lexer ('=' : cs)        = TokenAtt : lexer cs
+lexer ('{' : cs)        = TokenLBrace : lexer cs  
+lexer ('}' : cs)        = TokenRBrace : lexer cs 
+lexer (',' : cs)        = TokenComma  : lexer cs  
+lexer ('.' : cs)        = TokenDot    : lexer cs  
+lexer ('&' : '&' : cs)  = TokenAnd    : lexer cs
+lexer ('|' : '|' : cs)  = TokenOr     : lexer cs
+lexer ('>' : cs)        = TokenGrT    : lexer cs
+lexer ('<' : '=' : cs)  = TokenLEq    : lexer cs
+lexer ('=' : '=' : cs)  = TokenEq     : lexer cs
+lexer ('=' : cs)        = TokenAtt    : lexer cs
 lexer (c : cs) 
     | isSpace c = lexer cs
     | isDigit c = lexNum (c:cs)
