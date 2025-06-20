@@ -1,6 +1,16 @@
 # Interpreter
 Trabalho Final do CCR de Linguagens de Programação
 
-Link do vídeo com a explicação:
+Funcionalidade escolhida para implementação: Tuplas
 
-## Ainda em desenvolvimento!!
+Para diferenciar dos parênteses adicionados anteriormente, as tuplas foram representadas por chaves { }
+
+Também é possível acessar os elementos com o operador .
+Exemplo:
+
+ {1, true, 3}.2
+
+Resultado: 
+
+true
+
