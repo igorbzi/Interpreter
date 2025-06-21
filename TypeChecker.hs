@@ -31,7 +31,10 @@ typeof ctx (GrT e1 e2) = case (typeof ctx e1, typeof ctx e2) of
                        _                        -> Nothing 
 typeof ctx (LEq e1 e2) = case (typeof ctx e1, typeof ctx e2) of 
                        (Just TNum, Just TNum)   -> Just TBool
-                       _                        -> Nothing                                                  
+                       _                        -> Nothing  
+typeof ctx (Abs e) = case typeof ctx e of
+                       (Just TNum)              -> Just TNum
+                       _                        -> Nothing                                                
 typeof ctx (Not e1) = case typeof ctx e1 of 
                        (Just TBool)             -> Just TBool 
                        _                        -> Nothing                  
@@ -55,17 +58,15 @@ typeof ctx (App e1 e2) =
     _ -> Nothing
 typeof ctx (Paren e) = typeof ctx e    
 
-typeof ctx (Let x e1 e2) =       
-  case typeof ctx e1 of
-    Just t1 -> typeof ((x, t1) : ctx) e2
-    _ -> Nothing                     
+typeof ctx (Let x e1 e2) = case typeof ctx e1 of
+                      (Just t1) -> typeof ((x, t1) : ctx) e2
+                      _ -> Nothing                     
 
 typeof ctx (Tuple es) = do          
-  ts <- mapM (typeof ctx) es
-  return (TTuple ts)
+                      ts <- mapM (typeof ctx) es
+                      return (TTuple ts)
 
-typeof ctx (Proj e i) =
-  case typeof ctx e of
+typeof ctx (Proj e i) = case typeof ctx e of
     Just (TTuple ts) -> 
       if i > 0 && i <= length ts 
         then Just (ts !! (i-1))

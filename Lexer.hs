@@ -9,6 +9,7 @@ data Expr = BTrue
           | Sub Expr Expr
           | Mul Expr Expr
           | Div Expr Expr
+          | Abs Expr
           | And Expr Expr
           | Or Expr Expr
           | If Expr Expr Expr
@@ -38,6 +39,7 @@ data Token = TokenTrue
            | TokenSub
            | TokenMul
            | TokenDiv
+           | TokenAbs
            | TokenAnd
            | TokenOr
            | TokenIf
@@ -76,7 +78,7 @@ lexer ('\\': cs)        = TokenLam    : lexer cs
 lexer (':' : cs)        = TokenColon  : lexer cs
 lexer ('(' : cs)        = TokenLParen : lexer cs 
 lexer (')' : cs)        = TokenRParen : lexer cs 
-lexer ('{' : cs)        = TokenLBrace : lexer cs  
+lexer ('{' : cs)        = TokenLBrace : lexer cs  --Tokens novos
 lexer ('}' : cs)        = TokenRBrace : lexer cs 
 lexer (',' : cs)        = TokenComma  : lexer cs  
 lexer ('.' : cs)        = TokenDot    : lexer cs  
@@ -102,9 +104,10 @@ lexKW cs = case span isAlpha cs of
             ("if", rest)      -> TokenIf : lexer rest
             ("then", rest)    -> TokenThen : lexer rest
             ("else", rest)    -> TokenElse : lexer rest
+            ("abs", rest)      -> TokenAbs : lexer rest
             ("not", rest)     -> TokenNot : lexer rest
             ("int", rest)     -> TokenTNum : lexer rest
             ("bool", rest)    -> TokenTBool : lexer rest
-            ("let", rest)     -> TokenLet : lexer rest
+            ("let", rest)     -> TokenLet : lexer rest  --Tokens novos
             ("in", rest)     -> TokenIn : lexer rest
             (var, rest)     ->  TokenVar var : lexer rest    

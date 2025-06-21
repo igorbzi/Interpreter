@@ -1,6 +1,6 @@
-((\b : bool -> 
-    if b then 
-      let x = 2 in x * x
+((\b : int -> 
+    if true then 
+      let x = 2 in x * b
     else
       (5 + 7)
-    ) true)
+    ) 5)

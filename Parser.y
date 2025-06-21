@@ -25,6 +25,7 @@ import Lexer
     if            { TokenIf }
     then          { TokenThen }
     else          { TokenElse }
+    abs           { TokenAbs }
     not           { TokenNot }
     var           { TokenVar $$ }
     '\\'          { TokenLam }
@@ -43,7 +44,7 @@ import Lexer
     in            { TokenIn }
 
 
-%nonassoc if then else int bool var num true false let in
+%nonassoc if then else int bool var num true false let in abs not
 %nonassoc '\\' "->" '(' ')' ':' '{' '}' ',' '.'
 %left '>' "<=" "=="
 %left '+' '-'
@@ -66,6 +67,7 @@ Exp : num                           { Num $1 }
     | Exp "<=" Exp                  { LEq $1 $3 }
     | Exp "==" Exp                  { Eq $1 $3 }
     | if Exp then Exp else Exp      { If $2 $4 $6 }
+    | abs Exp                       { Abs $2 }
     | not Exp                       { Not $2}
     | '\\' var ':' Type "->" Exp    { Lam $2 $4 $6 }
     | Exp Exp                       { App $1 $2}

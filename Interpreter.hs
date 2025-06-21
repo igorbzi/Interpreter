@@ -26,13 +26,14 @@ subst v e (Or e1 e2)      = Or (subst v e e1) (subst v e e2)
 subst v e (GrT e1 e2)     = GrT (subst v e e1) (subst v e e2)
 subst v e (LEq e1 e2)     = LEq (subst v e e1) (subst v e e2)
 subst v e (Eq e1 e2)      = Eq (subst v e e1) (subst v e e2)
+subst v x (Abs e)         = Abs (subst v x e)
 subst v e (Not e1)        = Not (subst v e e1)
 subst v e (If e1 e2 e3)   = If (subst v e e1) (subst v e e2) (subst v e e3)
 subst v e (Var x)         = if v == x then e else Var x
 subst v e (Lam x t l)     = Lam x t (subst v e l)
 subst v e (App e1 e2)     = App (subst v e e1) (subst v e e2)
 subst v e (Paren e1)      = Paren (subst v e e1)
-subst v e (Let x e1 e2)   = Let x (subst v e e1) (subst v e e2)
+subst v e (Let x e1 e2)   = Let x (subst v e e1) (subst v e e2) --novas regras adicionadas
 subst v e (Tuple es)      = Tuple (map (subst v e) es) 
 subst v e (Proj e1 i)     = Proj (subst v e e1) i     
 
@@ -49,6 +50,8 @@ step (Mul e1 e2)              = Mul (step e1) e2
 step (Div (Num n1) (Num n2))  = Num (div n1 n2)
 step (Div (Num n1) e2)        = Div (Num n1) (step e2)
 step (Div e1 e2)              = Div (step e1) e2
+step (Abs (Num n))            = Num (abs n) 
+step (Abs e)                  = Abs (step e) 
 step (And BTrue e2)           = e2
 step (And BFalse e2)          = BFalse
 step (And e1 e2)              = And (step e1) e2  
@@ -74,7 +77,7 @@ step (App e1@(Lam x t b) e2)  |  isValue e2 = subst x e2 b
                               |  otherwise  = App e1 (step e2)
 step (App e1 e2)              = App (step e1) e2
 step (Paren e)                = e
-step (Let x e1 e2)            | isValue e1 = subst x e1 e2
+step (Let x e1 e2)            | isValue e1 = subst x e1 e2 --novas regras adicionadas
                               | otherwise  = Let x (step e1) e2 
 step (Proj (Tuple es) i)      | i > 0 && i <= length es = es !! (i-1) 
 step (Proj e i)               = Proj (step e) i                       
